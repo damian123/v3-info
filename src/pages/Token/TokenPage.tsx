@@ -31,7 +31,7 @@ import BarChart from 'components/BarChart/alt'
 import CandleChart from 'components/CandleChart'
 import TransactionTable from 'components/TransactionsTable'
 import { useSavedTokens } from 'state/user/hooks'
-import { ONE_HOUR_SECONDS, TimeWindow } from 'constants/intervals'
+import { ONE_DAY_SECONDS, TimeWindow } from 'constants/intervals'
 import { MonoSpace } from 'components/shared'
 import dayjs from 'dayjs'
 import { useActiveNetworkVersion } from 'state/application/hooks'
@@ -83,7 +83,7 @@ enum ChartView {
   PRICE,
 }
 
-const DEFAULT_TIME_WINDOW = TimeWindow.WEEK
+const DEFAULT_TIME_WINDOW = TimeWindow.MONTH
 
 export default function TokenPage() {
   const [activeNetwork] = useActiveNetworkVersion()
@@ -142,7 +142,7 @@ export default function TokenPage() {
   const [timeWindow] = useState(DEFAULT_TIME_WINDOW)
 
   // pricing data
-  const priceData = useTokenPriceData(formattedAddress, ONE_HOUR_SECONDS, timeWindow)
+  const priceData = useTokenPriceData(formattedAddress, ONE_DAY_SECONDS, timeWindow)
   const adjustedToCurrent = useMemo(() => {
     if (priceData && tokenData && priceData.length > 0) {
       const adjusted = Object.assign([], priceData)

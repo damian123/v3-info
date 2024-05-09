@@ -83,6 +83,10 @@ export async function fetchTokenPriceData(
       }
     }
 
+    // TODO:
+    // console.log('fetchTokenPriceData between ' + new Date(startTimestamp).toISOString() + ' and ' + new Date(endTimestamp).toISOString())
+    // console.log('fetchTokenPriceData between ' + startTimestamp + ' and ' + endTimestamp)
+
     // create an array of hour start times until we reach current hour
     const timestamps = []
     let time = startTimestamp
