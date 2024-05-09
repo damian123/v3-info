@@ -163,8 +163,8 @@ export default function Home() {
                   volumeWindow === VolumeWindow.monthly
                     ? monthlyVolumeData
                     : volumeWindow === VolumeWindow.weekly
-                    ? weeklyVolumeData
-                    : formattedVolumeData
+                      ? weeklyVolumeData
+                      : formattedVolumeData
                 }
                 color={theme?.blue1}
                 setValue={setVolumeHover}
