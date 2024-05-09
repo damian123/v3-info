@@ -158,6 +158,30 @@ export function useTokenChartData(address: string): TokenChartEntry[] | undefine
   return chartData
 }
 
+function convertToCSV(arr: PriceChartEntry[]): string {
+  // Update the headers to clearly separate Date and Time from Unix Timestamp
+  const headers = 'Date,Time,Unix Timestamp,Open,Close,High,Low'
+
+  // Map each data entry to a CSV string
+  const data = arr
+    .map((item) => {
+      // Convert the Unix timestamp to a human-readable format
+      const date = new Date(item.time * 1000).toLocaleString() // Ensure the timestamp is in milliseconds
+      return [
+        date, // Formatted Date and Time
+        item.time.toString(), // Raw Unix Timestamp
+        item.open.toFixed(6), // Use toFixed for consistent decimal places in price data
+        item.close.toFixed(6),
+        item.high.toFixed(6),
+        item.low.toFixed(6),
+      ].join(',')
+    })
+    .join('\n')
+
+  // Combine headers and data
+  return headers + '\n' + data
+}
+
 /**
  * Get top pools addresses that token is included in
  * If not loaded, fetch and store
@@ -177,8 +201,11 @@ export function useTokenPriceData(
 
   // construct timestamps and check if we need to fetch more data
   const oldestTimestampFetched = token.priceData.oldestFetchedTimestamp
-  const utcCurrentTime = dayjs()
-  const startTimestamp = utcCurrentTime.subtract(1, timeWindow).startOf('day').unix()
+  // Creating a specific date - January 1, 2023
+  const specificDate = new Date('2021-01-01T00:00:00Z') // Use the 'Z' to denote UTC time
+  const startTimestamp = Math.floor(specificDate.getTime() / 1000)
+  // const utcCurrentTime = dayjs()
+  // const startTimestamp = utcCurrentTime.subtract(1, timeWindow).startOf('day').unix()
 
   useEffect(() => {
     async function fetch() {
@@ -190,6 +217,18 @@ export function useTokenPriceData(
         blockClient,
       )
       if (data) {
+        // Convert data to CSV
+        const csvData = convertToCSV(data)
+        const blob = new Blob([csvData], { type: 'text/csv' })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `price-data-${address}-${new Date().toISOString()}.csv`)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+
         dispatch(
           updatePriceData({
             tokenAddress: address,
